@@ -19,18 +19,34 @@ public class Player : MonoBehaviour
     private bool _doubleJumpAvailable = false;
     [SerializeField]
     private int _coins = 0;
+    [SerializeField]
+    private int _lives = 3;
     private UIManager _uiManager;
+    private Vector3 _initialPosition;
 
     // Start is called before the first frame update
     void Start()
     {
+        _initialPosition = transform.position;
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        _uiManager.UpdateLivesText(_lives);
         _controller = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (transform.position.y <= -7)
+        {
+            _uiManager.UpdateLivesText(--_lives);
+            if (_lives == 0)
+            {
+                Destroy(this);
+            }
+            transform.SetPositionAndRotation(_initialPosition, new Quaternion());
+            return;
+        }
+
         float horizontal = Input.GetAxis("Horizontal");
         Vector3 direction = new Vector3(horizontal, 0, 0) * _speed;
 
